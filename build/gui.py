@@ -7,10 +7,13 @@ ASSETS_PATH = Path(r"C:\Users\dell\GUI-read-Bk-precision-data\build\assets\frame
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+def Add_current():
+    pass
 
 window = Tk()
 window.geometry("1000x550")
 window.configure(bg = "#000000")
+
 
 
 canvas = Canvas(
@@ -106,7 +109,7 @@ canvas.create_text(
     anchor="nw",
     text="Result",
     fill="#000000",
-    font=("Inter Medium", 16 * -1,"bold")
+    font=("Inter Medium", 16 * -1,"bold"),
 )
 
 image_image_6 = PhotoImage(
@@ -172,5 +175,26 @@ image_13 = canvas.create_image(
     190.0,
     image=image_image_13
 )
+
+def validate_numeric_input(P):
+    if P.isdigit() or P == "":
+        return True
+    return False
+    
+vcmd = (window.register(validate_numeric_input), '%P')
+
+entry_numeric = Entry(window, 
+                      bd=0, 
+                      bg="#D9D9D9", 
+                      highlightthickness=0, 
+                      font=("Inter Medium", 18), 
+                      validate='key', 
+                      validatecommand=vcmd)
+entry_numeric.place(x=220, y=124, width=200, height=30)
+
+
+button = Button(window, text="Add current", command=Add_current, bg="#D9D9D9", bd=0)
+button.place(x=205, y=174, width=93, height=35)
+
 window.resizable(False, False)
 window.mainloop()
