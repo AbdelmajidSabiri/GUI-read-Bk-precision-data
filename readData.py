@@ -1,5 +1,7 @@
 import pyvisa
 import time
+import pandas as pd
+from openpyxl import load_workbook
 
 class Bkp8600(object):
     def __init__(self, resource=None):
@@ -76,3 +78,29 @@ if __name__ == '__main__':
         # Reset to local mode and close the connection
         last.reset_to_manual()
         del last
+
+
+def Add_current(AddedValue, filename="output.xlsx"):
+    # Initialize Bkp8600 object and measure current and voltage
+    last = Bkp8600()
+    last.initialize()
+    
+    measured_current = last.get_current()
+    voltage = last.get_voltage()
+    last.set_current(AddedValue)
+    
+    # Create a DataFrame with the new data
+    df = pd.DataFrame([[measured_current, voltage, AddedValue]], 
+                      columns=["Measured Current", "Voltage", "Added Current"])
+    
+    # Load the existing workbook and append the data
+    book = load_workbook(filename)
+    with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+        writer.book = book
+        df.to_excel(writer, sheet_name='Sheet1', index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
+    
+    print(f"Data appended to {filename} successfully.")
+    
+    # Reset Bkp8600 object
+    last.reset_to_manual()
+    del last
