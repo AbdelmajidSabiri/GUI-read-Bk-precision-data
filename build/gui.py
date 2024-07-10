@@ -1,14 +1,16 @@
 from pathlib import Path
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
+import sys
+sys.path.append('C:\\Users\\dell\\GUI-read-Bk-precision-data')
+from readData import Add_current
+
 ASSETS_PATH = Path(r"C:\Users\dell\GUI-read-Bk-precision-data\build\assets\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
-def Add_current():
-    pass
 
 window = Tk()
 window.geometry("1000x550")
@@ -193,7 +195,7 @@ entry_numeric = Entry(window,
 entry_numeric.place(x=220, y=124, width=200, height=30)
 
 
-button = Button(window, text="Add current", command=Add_current, bg="#D9D9D9", bd=0)
+button = Button(window, text="Add current", command=lambda: Add_current(float(entry_numeric.get())), bg="#D9D9D9", bd=0)
 button.place(x=205, y=174, width=93, height=35)
 
 window.resizable(False, False)
