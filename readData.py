@@ -1,7 +1,8 @@
 import pyvisa
 import time
+import os
 import pandas as pd
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 
 class Bkp8600(object):
     def __init__(self, resource=None):
@@ -78,8 +79,6 @@ if __name__ == '__main__':
         # Reset to local mode and close the connection
         last.reset_to_manual()
         del last
-
-
 def Add_current(AddedValue, filename="output.xlsx"):
     # Initialize Bkp8600 object and measure current and voltage
     last = Bkp8600()
@@ -93,11 +92,27 @@ def Add_current(AddedValue, filename="output.xlsx"):
     df = pd.DataFrame([[measured_current, voltage, AddedValue]], 
                       columns=["Measured Current", "Voltage", "Added Current"])
     
-    # Load the existing workbook and append the data
-    book = load_workbook(filename)
-    with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-        writer.book = book
-        df.to_excel(writer, sheet_name='Sheet1', index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
+    # Load the existing workbook or create a new one if it doesn't exist
+    try:
+        book = load_workbook(filename)
+    except FileNotFoundError:
+        book = Workbook()
+    
+    # Select the active worksheet (you can modify this as per your requirement)
+    sheet_name = 'Sheet1'
+    if sheet_name not in book.sheetnames:
+        book.create_sheet(sheet_name)
+    
+    sheet = book[sheet_name]
+    
+    # Append data to the worksheet
+    max_row = sheet.max_row
+    for row in df.values.tolist():
+        sheet.append(row)
+    
+    # Save the workbook
+    book.save(filename)
+    book.close()  # Close the workbook
     
     print(f"Data appended to {filename} successfully.")
     
