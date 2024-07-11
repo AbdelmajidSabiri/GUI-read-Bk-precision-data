@@ -119,3 +119,6 @@ def Add_current(AddedValue, filename="output.xlsx"):
     # Reset Bkp8600 object
     last.reset_to_manual()
     del last
+
+def Add_voltage(AddValue, filename="output.xlsx"):
+    pass
