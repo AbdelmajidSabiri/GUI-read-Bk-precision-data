@@ -20,7 +20,7 @@ class GUI:
 
         self.window = Tk()
         self.window.title("Agamine")
-        self.window.geometry("1000x550")
+        self.window.geometry("1900x1000")
         self.window.configure(bg="#000000")
 
         self.notebook = ttk.Notebook(self.window)
@@ -51,26 +51,27 @@ class GUI:
         canvas_edit = Canvas(
             self.tab_edit,
             bg="#000000",
-            height=550,
-            width=1000,
+            height=1000,
+            width=1900,
             bd=0,
             highlightthickness=0,
             relief="ridge"
+            
         )
-        canvas_edit.place(x=0, y=0)
+        canvas_edit.pack(fill="both", expand=True)
 
         self.image_image_1 = PhotoImage(file=self.relative_to_assets("image_1.png"))
         image_1 = canvas_edit.create_image(171.0, 36.0, image=self.image_image_1)
 
         self.image_image_2 = PhotoImage(file=self.relative_to_assets("image_2.png"))
-        image_2 = canvas_edit.create_image(499.0, 70.0, image=self.image_image_2)
+        image_2 = canvas_edit.create_image(950.0001220703125,67.5, image=self.image_image_2)
 
         self.image_image_3 = PhotoImage(file=self.relative_to_assets("image_3.png"))
-        image_3 = canvas_edit.create_image(78.0, 308.0, image=self.image_image_3)
+        image_3 = canvas_edit.create_image(125.0,533.0, image=self.image_image_3)
 
         canvas_edit.create_text(
-            48.0,
-            118.0,
+            52.0,
+            128.0,
             anchor="nw",
             text="Data",
             fill="#000000",
@@ -78,11 +79,11 @@ class GUI:
         )
 
         self.image_image_4 = PhotoImage(file=self.relative_to_assets("image_4.png"))
-        image_4 = canvas_edit.create_image(64.0, 160.0, image=self.image_image_4)
+        image_4 = canvas_edit.create_image(89.0,170.0, image=self.image_image_4)
 
         canvas_edit.create_text(
-            46.0,
-            185.0,
+            59.0,
+            202.0,
             anchor="nw",
             text="Control",
             fill="#000000",
@@ -90,8 +91,8 @@ class GUI:
         )
 
         canvas_edit.create_text(
-            47.0,
-            236.0,
+            60.0,
+            276.0,
             anchor="nw",
             text="Management",
             fill="#000000",
@@ -99,8 +100,8 @@ class GUI:
         )
 
         canvas_edit.create_text(
-            47.0,
-            290.0,
+            60.0,
+            352.0,
             anchor="nw",
             text = "State",
             fill="#000000",
@@ -108,11 +109,11 @@ class GUI:
         )
 
         self.image_image_5 = PhotoImage(file=self.relative_to_assets("image_5.png"))
-        image_5 = canvas_edit.create_image(23.0, 127.0, image=self.image_image_5)
+        image_5 = canvas_edit.create_image(30.0,137.0, image=self.image_image_5)
 
         canvas_edit.create_text(
-            47.0,
-            344.0,
+            59.0,
+            424.0,
             anchor="nw",
             text="Result",
             fill="#000000",
@@ -120,24 +121,24 @@ class GUI:
         )
 
         self.image_image_6 = PhotoImage(file=self.relative_to_assets("image_6.png"))
-        image_6 = canvas_edit.create_image(24.0, 353.0, image=self.image_image_6)
+        image_6 = canvas_edit.create_image(29.0,435.0, image=self.image_image_6)
 
         self.image_image_7 = PhotoImage(file=self.relative_to_assets("image_7.png"))
-        image_7 = canvas_edit.create_image(24.0, 243.0, image=self.image_image_7)
+        image_7 = canvas_edit.create_image(30.0,285.0, image=self.image_image_7)
 
         self.image_image_8 = PhotoImage(file=self.relative_to_assets("image_8.png"))
-        image_8 = canvas_edit.create_image(23.0, 193.0, image=self.image_image_8)
+        image_8 = canvas_edit.create_image(30.0,215.0, image=self.image_image_8)
 
         self.image_image_9 = PhotoImage(file=self.relative_to_assets("image_9.png"))
-        image_9 = canvas_edit.create_image(25.0, 295.0, image=self.image_image_9)
+        image_9 = canvas_edit.create_image(29.0,360.0, image=self.image_image_9)
 
         self.image_image_12 = PhotoImage(file=self.relative_to_assets("image_12.png"))
-        image_12 = canvas_edit.create_image(330.0, 138.0, image=self.image_image_12)
-        image_12 = canvas_edit.create_image(660.0, 138.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(400.0, 138.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(730.0, 138.0, image=self.image_image_12)
 
         self.image_image_13 = PhotoImage(file=self.relative_to_assets("image_13.png"))
-        image_13 = canvas_edit.create_image(250.0, 190.0, image=self.image_image_13)
-        image_13_1 = canvas_edit.create_image(580.0, 190.0, image=self.image_image_13)
+        image_13 = canvas_edit.create_image(320.0, 190.0, image=self.image_image_13)
+        image_13_1 = canvas_edit.create_image(650.0, 190.0, image=self.image_image_13)
 
         vcmd = (self.window.register(self.validate_numeric_input), '%P')
 
@@ -150,7 +151,7 @@ class GUI:
             validate='key',
             validatecommand=vcmd
         )
-        self.entry_current.place(x=220, y=124, width=200, height=30)
+        self.entry_current.place(x=290, y=124, width=200, height=30)
         self.button_current = Button(
             self.tab_edit,
             text="Add current",
@@ -158,7 +159,7 @@ class GUI:
             bg="#D9D9D9",
             bd=0
         )
-        self.button_current.place(x=205, y=174, width=93, height=35)
+        self.button_current.place(x=275, y=174, width=93, height=35)
 
         self.entry_voltage = Entry(
             self.tab_edit,
@@ -169,7 +170,7 @@ class GUI:
             validate='key',
             validatecommand=vcmd
         )
-        self.entry_voltage.place(x=550, y=124, width=200, height=30)
+        self.entry_voltage.place(x=620, y=124, width=200, height=30)
         self.button_voltage = Button(
             self.tab_edit,
             text="Add voltage",
@@ -177,40 +178,43 @@ class GUI:
             bg="#D9D9D9",
             bd=0
         )
-        self.button_voltage.place(x=535, y=174, width=93, height=35)
+        self.button_voltage.place(x=605, y=174, width=93, height=35)
 
     def setup_display_tab(self):
         canvas_display = Canvas(
             self.tab_display,
             bg="#000000",
-            height=550,
-            width=1000,
+            height=1000,
+            width=1900,
             bd=0,
             highlightthickness=0,
             relief="ridge"
         )
         
-        canvas_display.place(x=0, y=0)
+        canvas_display.pack(fill="both", expand=True)
 
         self.image_image_10 = PhotoImage(file=self.relative_to_assets("image_10.png"))
         self.image_image_11 = PhotoImage(file=self.relative_to_assets("image_11.png"))
+        self.image_image_14 = PhotoImage(file=self.relative_to_assets("image_14.png"))
+
 
         image_1_1 = canvas_display.create_image(171.0, 36.0, image=self.image_image_1)
-        image_2_1 = canvas_display.create_image(499.0, 70.0, image=self.image_image_2)
-        image_3_1 = canvas_display.create_image(78.0, 308.0, image=self.image_image_3)
+        image_2_1 = canvas_display.create_image(950.0001220703125,67.5, image=self.image_image_2)
+        image_3_1 = canvas_display.create_image(125.0,533.0, image=self.image_image_3)
+        
         canvas_display.create_text(
-            48.0,
-            118.0,
+            52.0,
+            128.0,
             anchor="nw",
             text="Data",
             fill="#000000",
             font=("Inter Medium", 16 * -1, "bold")
         )
 
-        image_4_1 = canvas_display.create_image(64.0, 160.0, image=self.image_image_4)
+        image_4_1 = canvas_display.create_image(89.0,170.0, image=self.image_image_4)
         canvas_display.create_text(
-            46.0,
-            185.0,
+            59.0,
+            202.0,
             anchor="nw",
             text="Control",
             fill="#000000",
@@ -218,8 +222,8 @@ class GUI:
         )
 
         canvas_display.create_text(
-            47.0,
-            236.0,
+            60.0,
+            276.0,
             anchor="nw",
             text="Management",
             fill="#000000",
@@ -227,34 +231,31 @@ class GUI:
         )
 
         canvas_display.create_text(
-            47.0,
-            290.0,
+            60.0,
+            352.0,
             anchor="nw",
             text="State",
             fill="#000000",
             font=("Inter Medium", 16 * -1, "bold")
         )
 
-        image_5_1 = canvas_display.create_image(23.0, 127.0, image=self.image_image_5)
+        image_5_1 = canvas_display.create_image(30.0,137.0, image=self.image_image_5)
         canvas_display.create_text(
-            47.0,
-            344.0,
+            59.0,
+            424.0,
             anchor="nw",
             text="Result",
             fill="#000000",
             font=("Inter Medium", 16 * -1, "bold"),
         )
 
-        image_6_1 = canvas_display.create_image(24.0, 353.0, image=self.image_image_6)
-        image_7_1 = canvas_display.create_image(24.0, 243.0, image=self.image_image_7)
-        image_8_1 = canvas_display.create_image(23.0, 193.0, image=self.image_image_8)
-        image_9_1 = canvas_display.create_image(25.0, 295.0, image=self.image_image_9)
-
-        image_image_10 = PhotoImage(file=self.relative_to_assets("image_10.png"))
-        image_10_1 = canvas_display.create_image(791.0, 372.0, image=self.image_image_10)
-
-        image_image_11 = PhotoImage(file=self.relative_to_assets("image_11.png"))
-        image_11_1 = canvas_display.create_image(365.0, 372.0, image=self.image_image_11)
+        image_6_1 = canvas_display.create_image(29.0,435.0, image=self.image_image_6)
+        image_7_1 = canvas_display.create_image(30.0,285.0, image=self.image_image_7)
+        image_8_1 = canvas_display.create_image(30.0,215.0, image=self.image_image_8)
+        image_9_1 = canvas_display.create_image(29.0,360.0, image=self.image_image_9)
+        image_10_1 = canvas_display.create_image(669.0,318.0, image=self.image_image_10)
+        image_11_1 = canvas_display.create_image(669.0,753.0, image=self.image_image_11)
+        image_14 =canvas_display.create_image(1445.0,318.0,image=self.image_image_14)
 
         fig_current, ax_current = plt.subplots(figsize=(3.3, 2.1))
         canvas_current = FigureCanvasTkAgg(fig_current, master=self.tab_display)
@@ -319,7 +320,7 @@ class GUI:
         try:
             voltage_value = float(self.entry_voltage.get())
             self.bk_device.set_voltage(voltage_value)
-            Add_voltage(voltage_value)  # Update the Excel file
+            Add_voltage(voltage_value)
         except ValueError:
             print("Invalid voltage value entered.")
 
