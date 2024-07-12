@@ -71,8 +71,8 @@ class GUI:
         image_3 = canvas_edit.create_image(125.0,533.0, image=self.image_image_3)
 
         canvas_edit.create_text(
-            52.0,
-            128.0,
+            54.0,
+            136.0,
             anchor="nw",
             text="Data",
             fill="#000000",
@@ -83,8 +83,8 @@ class GUI:
         image_4 = canvas_edit.create_image(89.0,170.0, image=self.image_image_4)
 
         canvas_edit.create_text(
-            59.0,
-            202.0,
+            62.0,
+            205.0,
             anchor="nw",
             text="Control",
             fill="#000000",
@@ -204,8 +204,8 @@ class GUI:
         image_3_1 = canvas_display.create_image(125.0,533.0, image=self.image_image_3)
 
         canvas_display.create_text(
-            52.0,
-            128.0,
+            54.0,
+            136.0,
             anchor="nw",
             text="Data",
             fill="#000000",
@@ -214,8 +214,8 @@ class GUI:
 
         image_4_1 = canvas_display.create_image(89.0,170.0, image=self.image_image_4)
         canvas_display.create_text(
-            59.0,
-            202.0,
+            62.0,
+            205.0,
             anchor="nw",
             text="Control",
             fill="#000000",
@@ -266,7 +266,7 @@ class GUI:
             fig_current,
             self.animate_current,
             fargs=(ax_current,),
-            interval=100
+            interval=00
         )
 
         fig_voltage, ax_voltage = plt.subplots(figsize=(5, 3))
@@ -304,7 +304,7 @@ class GUI:
             550.0,
             533.0,
             anchor="nw",
-            text="Voltage Variation",
+            text="Power Variation",
             fill="#FFFFFF",
             font=("Inter Bold", 27 * -1)
         )
@@ -313,7 +313,7 @@ class GUI:
             1326.0,
             98.0,
             anchor="nw",
-            text="Current Variation",
+            text="Voltage Variation",
             fill="#FFFFFF",
             font=("Inter Bold", 27 * -1)
         )
@@ -333,7 +333,7 @@ class GUI:
         self.data_list_current = self.data_list_current[-50:]  # Limit to the last 50 data points
         ax.clear()
         ax.plot(self.data_list_current)
-        ax.set_ylim([0.0001, 0.001])
+        ax.set_ylim([0.0001, 0.003])
 
 
     def animate_voltage(self, i, ax):
