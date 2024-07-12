@@ -48,7 +48,14 @@ class Bkp8600(object):
 
     def set_current(self, current):
         self.instr.write("INPut ON")
+        self.instr.write("FUNC CURRent")
         self.instr.write(f"CURRent {current}")
+
+    
+    def set_voltage(self, voltage):
+        self.instr.write("INPut ON")  # Turn on the load
+        self.instr.write("FUNC VOLTage")  # Set the function mode to Constant Voltage (CV)
+        self.instr.write(f"VOLTage {voltage}") 
 
     def reset_to_manual(self):
         self.instr.write("INPut OFF")
@@ -89,8 +96,8 @@ def Add_current(AddedValue, filename="output.xlsx"):
     last.set_current(AddedValue)
     
     # Create a DataFrame with the new data
-    df = pd.DataFrame([[measured_current, voltage, AddedValue]], 
-                      columns=["Measured Current", "Voltage", "Added Current"])
+    df = pd.DataFrame([[measured_current, voltage, AddedValue,None]], 
+                      columns=["Measured Current", "Voltage", "Added Current","Added voltage"])
     
     # Load the existing workbook or create a new one if it doesn't exist
     try:
@@ -120,5 +127,43 @@ def Add_current(AddedValue, filename="output.xlsx"):
     last.reset_to_manual()
     del last
 
-def Add_voltage(AddValue, filename="output.xlsx"):
-    pass
+def Add_voltage(AddedValue, filename="output.xlsx"):
+    # Initialize Bkp8600 object and measure current and voltage
+    last = Bkp8600()
+    last.initialize()
+    
+    measured_current = last.get_current()
+    voltage = last.get_voltage()
+    last.set_voltage(AddedValue)
+    
+    # Create a DataFrame with the new data
+    df = pd.DataFrame([[measured_current, voltage, None, AddedValue]], 
+                      columns=["Measured Current", "Voltage", "Added Current","Added Voltage"])
+    
+    # Load the existing workbook or create a new one if it doesn't exist
+    try:
+        book = load_workbook(filename)
+    except FileNotFoundError:
+        book = Workbook()
+    
+    # Select the active worksheet (you can modify this as per your requirement)
+    sheet_name = 'Sheet1'
+    if sheet_name not in book.sheetnames:
+        book.create_sheet(sheet_name)
+    
+    sheet = book[sheet_name]
+    
+    # Append data to the worksheet
+    max_row = sheet.max_row
+    for row in df.values.tolist():
+        sheet.append(row)
+    
+    # Save the workbook
+    book.save(filename)
+    book.close()  # Close the workbook
+    
+    print(f"Data appended to {filename} successfully.")
+    
+    # Reset Bkp8600 object
+    last.reset_to_manual()
+    del last
