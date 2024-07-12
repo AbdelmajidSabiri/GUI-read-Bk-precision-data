@@ -17,6 +17,7 @@ class GUI:
         self.bk_device.initialize()
         self.data_list_current = []
         self.data_list_voltage = []
+        self.data_list_power = []
 
         self.window = Tk()
         self.window.title("Agamine")
@@ -201,7 +202,7 @@ class GUI:
         image_1_1 = canvas_display.create_image(171.0, 36.0, image=self.image_image_1)
         image_2_1 = canvas_display.create_image(950.0001220703125,67.5, image=self.image_image_2)
         image_3_1 = canvas_display.create_image(125.0,533.0, image=self.image_image_3)
-        
+
         canvas_display.create_text(
             52.0,
             128.0,
@@ -257,26 +258,64 @@ class GUI:
         image_11_1 = canvas_display.create_image(669.0,753.0, image=self.image_image_11)
         image_14 =canvas_display.create_image(1445.0,318.0,image=self.image_image_14)
 
-        fig_current, ax_current = plt.subplots(figsize=(3.3, 2.1))
+        fig_current, ax_current = plt.subplots(figsize=(5, 3))
         canvas_current = FigureCanvasTkAgg(fig_current, master=self.tab_display)
         canvas_current.draw()
-        canvas_current.get_tk_widget().place(x=200, y=260)
+        canvas_current.get_tk_widget().place(x=420, y=170)
         self.ani_current = animation.FuncAnimation(
             fig_current,
             self.animate_current,
             fargs=(ax_current,),
-            interval=500
+            interval=100
         )
 
-        fig_voltage, ax_voltage = plt.subplots(figsize=(3.3, 2.1))
+        fig_voltage, ax_voltage = plt.subplots(figsize=(5, 3))
         canvas_voltage = FigureCanvasTkAgg(fig_voltage, master=self.tab_display)
         canvas_voltage.draw()
-        canvas_voltage.get_tk_widget().place(x=625, y=260)
+        canvas_voltage.get_tk_widget().place(x=1195, y=170)
         self.ani_voltage = animation.FuncAnimation(
             fig_voltage,
             self.animate_voltage,
             fargs=(ax_voltage,),
-            interval=500
+            interval=100
+        )
+
+        fig_power, ax_power = plt.subplots(figsize=(5, 3))
+        canvas_power = FigureCanvasTkAgg(fig_power, master=self.tab_display)
+        canvas_power.draw()
+        canvas_power.get_tk_widget().place(x=420, y=600)
+        self.ani_power = animation.FuncAnimation(
+            fig_power,
+            self.animate_power,
+            fargs=(ax_power,),
+            interval=100
+        )
+
+        canvas_display.create_text(
+            550.0,
+            98.0,
+            anchor="nw",
+            text="Current Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+
+        canvas_display.create_text(
+            550.0,
+            533.0,
+            anchor="nw",
+            text="Voltage Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+
+        canvas_display.create_text(
+            1326.0,
+            98.0,
+            anchor="nw",
+            text="Current Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
         )
 
     def get_data(self):
@@ -295,8 +334,7 @@ class GUI:
         ax.clear()
         ax.plot(self.data_list_current)
         ax.set_ylim([0.0001, 0.001])
-        ax.set_title("Current Change")
-        ax.set_ylabel("Current Value")
+
 
     def animate_voltage(self, i, ax):
         _, voltage = self.get_data()
@@ -304,9 +342,17 @@ class GUI:
         self.data_list_voltage = self.data_list_voltage[-50:]  # Limit to the last 50 data points
         ax.clear()
         ax.plot(self.data_list_voltage)
-        ax.set_ylim([0, 0.005])
-        ax.set_title("Voltage Change")
-        ax.set_ylabel("Voltage Value")
+        ax.set_ylim([0, 0.009])
+
+    def animate_power(self,i,ax) :
+        current, voltage = self.get_data()
+        power = current * voltage
+        self.data_list_power.append(power)
+        self.data_list_power = self.data_list_power[-50:]  # Limit to the last 50 data points
+        ax.clear()
+        ax.plot(self.data_list_power)
+        ax.set_ylim([0, 0.000005])
+
 
     def add_current(self):
         try:
