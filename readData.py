@@ -7,59 +7,74 @@ from openpyxl import load_workbook, Workbook
 class Bkp8600(object):
     def __init__(self, resource=None):
         self.rm = pyvisa.ResourceManager()
+        self.instr = None 
+        self.instrument_found = False
         if resource:
-            self.instr = self.rm.open_resource(resource,timeout=10000)
+            try:
+                self.instr = self.rm.open_resource(resource, timeout=10000)
+                self.instrument_found = True
+            except pyvisa.VisaIOError:
+                print(f"Error: Unable to open resource {resource}.")
         else:
-            # Find the first BK Precision instrument
             instruments = self.rm.list_resources()
             for r in instruments:
                 try:
                     instr = self.rm.open_resource(r)
                     if instr.query("*IDN?").startswith("B&K Precision"):
                         self.instr = instr
+                        self.instrument_found = True
                         break
                 except pyvisa.VisaIOError:
                     pass
-            else:
-                raise RuntimeError("No BK Precision instrument found.")
+            if not self.instrument_found:
+                print("No BK Precision instrument found.")
 
     def get_description(self):
-        return self.instr.query("*IDN?")
+        if self.instrument_found:
+            return self.instr.query("*IDN?")
 
     def get_current(self):
-        return float(self.instr.query(":MEASure:CURRent?"))
+        if self.instrument_found:
+            return float(self.instr.query(":MEASure:CURRent?"))
 
     def get_voltage(self):
-        return float(self.instr.query(":MEASure:VOLTage?"))
+        if self.instrument_found:
+            return float(self.instr.query(":MEASure:VOLTage?"))
     
     def get_resistance(self):
-        return float(self.instr.query(":MEASure:RESistance?"))
+        if self.instrument_found:
+            return float(self.instr.query(":MEASure:RESistance?"))
 
     def get_power(self):
-        return float(self.instr.query(":MEASure:POWer?"))
+        if self.instrument_found:
+            return float(self.instr.query(":MEASure:POWer?"))
 
     def initialize(self):
-        self.instr.write("SYSTem:REMote")
-        self.instr.write("INPut OFF")
-        self.instr.write("*RST")
-        self.instr.write("*CLS")
-        self.instr.write("*SRE 0")
-        self.instr.write("*ESE 0")
+        if self.instrument_found:
+            self.instr.write("SYSTem:REMote")
+            self.instr.write("INPut OFF")
+            self.instr.write("*RST")
+            self.instr.write("*CLS")
+            self.instr.write("*SRE 0")
+            self.instr.write("*ESE 0")
 
     def set_current(self, current):
-        self.instr.write("INPut ON")
-        self.instr.write("FUNC CURRent")
-        self.instr.write(f"CURRent {current}")
+        if self.instrument_found:
+            self.instr.write("INPut ON")
+            self.instr.write("FUNC CURRent")
+            self.instr.write(f"CURRent {current}")
 
     
     def set_voltage(self, voltage):
-        self.instr.write("INPut ON")  # Turn on the load
-        self.instr.write("FUNC VOLTage")  # Set the function mode to Constant Voltage (CV)
-        self.instr.write(f"VOLTage {voltage}") 
+        if self.instrument_found:
+            self.instr.write("INPut ON")  # Turn on the load
+            self.instr.write("FUNC VOLTage")  # Set the function mode to Constant Voltage (CV)
+            self.instr.write(f"VOLTage {voltage}") 
 
     def reset_to_manual(self):
-        self.instr.write("INPut OFF")
-        self.instr.write("SYSTem:LOCal")
+        if self.instrument_found:
+            self.instr.write("INPut OFF")
+            self.instr.write("SYSTem:LOCal")
 
         
 if __name__ == '__main__':
