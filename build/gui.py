@@ -21,7 +21,7 @@ class GUI:
 
         self.window = Tk()
         self.window.title("Agamine")
-        self.window.geometry("1900x1000")
+        self.window.geometry("1900x1500")
         self.window.configure(bg="#000000")
 
         self.notebook = ttk.Notebook(self.window)
@@ -181,6 +181,7 @@ class GUI:
         )
         self.button_voltage.place(x=605, y=174, width=93, height=35)
 
+
     def setup_display_tab(self):
         canvas_display = Canvas(
             self.tab_display,
@@ -257,6 +258,7 @@ class GUI:
         image_10_1 = canvas_display.create_image(669.0,318.0, image=self.image_image_10)
         image_11_1 = canvas_display.create_image(669.0,753.0, image=self.image_image_11)
         image_14 =canvas_display.create_image(1445.0,318.0,image=self.image_image_14)
+        image_15 = canvas_display.create_image(1445.0, 753.0, image = self.image_image_11)
 
         fig_current, ax_current = plt.subplots(figsize=(5, 3))
         canvas_current = FigureCanvasTkAgg(fig_current, master=self.tab_display)
@@ -291,6 +293,18 @@ class GUI:
             interval=100
         )
 
+        fig_combined, ax_combined = plt.subplots(figsize=(5, 3))
+        canvas_combined = FigureCanvasTkAgg(fig_combined, master=self.tab_display)
+        canvas_combined.draw()
+        canvas_combined.get_tk_widget().place(x=1195, y=600)
+        self.ani_combined = animation.FuncAnimation(
+            fig_combined,
+            self.animate_combined,
+            fargs=(ax_combined,),
+            interval=100
+        )
+
+
         canvas_display.create_text(
             550.0,
             98.0,
@@ -314,6 +328,15 @@ class GUI:
             98.0,
             anchor="nw",
             text="Voltage Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+        
+        canvas_display.create_text(
+            1326.0,
+            533.0,
+            anchor="nw",
+            text="Combined Chart",
             fill="#FFFFFF",
             font=("Inter Bold", 27 * -1)
         )
@@ -352,6 +375,19 @@ class GUI:
         ax.clear()
         ax.plot(self.data_list_power)
         ax.set_ylim([0, 0.000005])
+
+    def animate_combined(self, i, ax):
+        current, voltage = self.get_data()
+        self.data_list_current.append(current)
+        self.data_list_voltage.append(voltage)
+        self.data_list_current = self.data_list_current[-50:]  # Limit to the last 50 data points
+        self.data_list_voltage = self.data_list_voltage[-50:]  # Limit to the last 50 data points
+
+        ax.clear()
+        ax.plot(self.data_list_current, label='Current')
+        ax.plot(self.data_list_voltage, label='Voltage')
+        ax.legend()
+        ax.set_ylim([0, 0.008]) 
 
 
     def add_current(self):
