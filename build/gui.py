@@ -139,6 +139,15 @@ class GUI:
             font=("Inter Medium", 16 * -1, "bold"),
         )
 
+        canvas_edit.create_text(
+            1160.0,
+            125.0,
+            anchor="nw",
+            text="Max Power : ",
+            fill="#FFFFFF",
+            font=("Bold", 19 * -1)
+        )
+
         self.image_image_6 = PhotoImage(file=self.relative_to_assets("image_6.png"))
         image_6 = canvas_edit.create_image(29.0,435.0, image=self.image_image_6)
 
@@ -154,6 +163,9 @@ class GUI:
         self.image_image_12 = PhotoImage(file=self.relative_to_assets("image_12.png"))
         image_12 = canvas_edit.create_image(400.0, 138.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(730.0, 138.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(1400.0, 138.0, image=self.image_image_12)
+
+
 
         self.image_image_13 = PhotoImage(file=self.relative_to_assets("image_13.png"))
         image_13 = canvas_edit.create_image(320.0, 190.0, image=self.image_image_13)
@@ -203,11 +215,11 @@ class GUI:
         self.label_max_power_value = Label(
                 self.tab_edit,
                 textvariable=self.max_power_var,
-                bg="#000000",
-                fg="#FFFFFF",
+                bg="#D9D9D9",
+                fg="#D68102",
                 font=("Inter Medium", 16)
             )
-        self.label_max_power_value.place(x=650, y=20)
+        self.label_max_power_value.place(x=1310, y=124)
 
             # Start updating max power
         self.update_max_power()
