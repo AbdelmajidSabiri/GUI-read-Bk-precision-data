@@ -1,8 +1,9 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, Button, PhotoImage,ttk
+from tkinter import Tk, Canvas, Entry, Button, PhotoImage,ttk, DoubleVar,Label
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pandas as pd
 import sys
 sys.path.append('C:\\Users\\dell\\GUI-read-Bk-precision-data')
 from readData import Add_current, Bkp8600, Add_voltage
@@ -19,6 +20,7 @@ class GUI:
         self.data_list_voltage = []
         self.data_list_power = []
 
+
         self.window = Tk()
         self.window.title("Agamine")
         self.window.geometry("1900x1500")
@@ -26,6 +28,10 @@ class GUI:
 
         self.notebook = ttk.Notebook(self.window)
         self.notebook.pack(expand=1, fill="both")
+
+        self.max_power = 0.0
+        self.max_power_var = DoubleVar()
+
 
         self.tab_edit = ttk.Frame(self.notebook)
         self.tab_display = ttk.Frame(self.notebook)
@@ -47,6 +53,18 @@ class GUI:
         if P.isdigit() or P == "" or (default and P == "default"):
             return True
         return False
+
+    def GetMaxPower(self) :
+        current, voltage = self.get_data()
+        power = current * voltage
+        if power > self.max_power:
+            self.max_power = power
+        return self.max_power
+
+    def update_max_power(self):
+        max_power_formatted = "{:.8f}".format(self.GetMaxPower())
+        self.max_power_var.set(max_power_formatted)
+        self.window.after(1000, self.update_max_power)
 
     def setup_edit_tab(self):
         canvas_edit = Canvas(
@@ -181,6 +199,19 @@ class GUI:
         )
         self.button_voltage.place(x=605, y=174, width=93, height=35)
 
+
+        self.label_max_power_value = Label(
+                self.tab_edit,
+                textvariable=self.max_power_var,
+                bg="#000000",
+                fg="#FFFFFF",
+                font=("Inter Medium", 16)
+            )
+        self.label_max_power_value.place(x=650, y=20)
+
+            # Start updating max power
+        self.update_max_power()
+            
 
     def setup_display_tab(self):
         canvas_display = Canvas(
