@@ -19,6 +19,7 @@ class GUI:
         self.data_list_current = []
         self.data_list_voltage = []
         self.data_list_power = []
+        self.max_power = 0.0
         self.MPP = {"Vmpp" : 0 , "Impp" : 0}
 
 
@@ -30,10 +31,11 @@ class GUI:
         self.notebook = ttk.Notebook(self.window)
         self.notebook.pack(expand=1, fill="both")
 
-        self.max_power = 0.0
         self.max_power_var = DoubleVar()
         self.Vmpp_var = StringVar()
         self.Impp_var = StringVar()
+        self.Isc_var = StringVar()
+        self.Voc_var = StringVar()
 
 
         self.tab_edit = ttk.Frame(self.notebook)
@@ -82,7 +84,33 @@ class GUI:
         self.Vmpp_var.set(Vmpp_formatted)
         self.Impp_var.set(Impp_formatted)
 
+        self.calculate_isc_voc()
         self.window.after(1000, self.update_max_power)
+
+    def calculate_isc_voc(self):
+        
+        Isc_found = False
+
+        for v, i in zip(self.data_list_voltage, self.data_list_current):
+            if v == 0:
+                self.Isc_var.set("{:.8f} A".format(i))
+                Isc_found = True
+                break
+        if not Isc_found :
+            self.Isc_var.set("0.00000000 A")
+
+        
+        Voc_found = False
+
+        for v, i in zip(self.data_list_voltage, self.data_list_current):
+            
+            if i == 0:
+                self.Voc_var.set("{:.8f} V".format(v))
+                Voc_found = True
+                break
+
+        if not Voc_found :
+            self.Voc_var.set("0.00000000 V")
 
     def setup_edit_tab(self):
         canvas_edit = Canvas(
@@ -191,6 +219,22 @@ class GUI:
             fill="#FFFFFF",
             font=("Bold", 17 * -1)
         )
+        canvas_edit.create_text(
+            1370.0,
+            330.0,
+            anchor="nw",
+            text="Isc",
+            fill="#FFFFFF",
+            font=("Bold", 17 * -1)
+        )
+        canvas_edit.create_text(
+            1670.0,
+            330.0,
+            anchor="nw",
+            text="Voc",
+            fill="#FFFFFF",
+            font=("Bold", 17 * -1)
+        )
 
 
         self.image_image_6 = PhotoImage(file=self.relative_to_assets("image_6.png"))
@@ -211,6 +255,9 @@ class GUI:
         image_12 = canvas_edit.create_image(1400.0, 138.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(1400.0, 260.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(1700.0, 260.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(1400.0, 380.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(1700.0, 380.0, image=self.image_image_12)
+
 
 
 
@@ -285,6 +332,25 @@ class GUI:
                 font=("Inter Medium", 16)
             )
         self.label_Impp_value.place(x=1605, y=246)
+
+        
+        self.label_Isc_value = Label(
+                self.tab_edit,
+                textvariable=self.Isc_var,
+                bg="#D9D9D9",
+                fg="#D68102",
+                font=("Inter Medium", 16)
+            )
+        self.label_Isc_value.place(x=1310, y=367)
+
+        self.label_Voc_value = Label(
+                self.tab_edit,
+                textvariable=self.Voc_var,
+                bg="#D9D9D9",
+                fg="#D68102",
+                font=("Inter Medium", 16)
+            )
+        self.label_Voc_value.place(x=1605, y=367)
 
             
         self.update_max_power()
