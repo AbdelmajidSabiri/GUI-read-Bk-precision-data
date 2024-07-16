@@ -1,5 +1,5 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, Button, PhotoImage,ttk, DoubleVar,Label
+from tkinter import Tk, Canvas, Entry, Button, PhotoImage,ttk, DoubleVar,Label,StringVar
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -19,7 +19,7 @@ class GUI:
         self.data_list_current = []
         self.data_list_voltage = []
         self.data_list_power = []
-        self.MPP = {"Voltage" : 0 , "Current" : 0}
+        self.MPP = {"Vmpp" : 0 , "Impp" : 0}
 
 
         self.window = Tk()
@@ -32,6 +32,8 @@ class GUI:
 
         self.max_power = 0.0
         self.max_power_var = DoubleVar()
+        self.Vmpp_var = StringVar()
+        self.Impp_var = StringVar()
 
 
         self.tab_edit = ttk.Frame(self.notebook)
@@ -64,13 +66,22 @@ class GUI:
 
         if power > self.max_power:
             self.max_power = power
-            self.MPP["Voltage"] = voltage
-            self.MPP["Current"] = current
-        return self.max_power
+            self.MPP["Vmpp"] = voltage
+            self.MPP["Impp"] = current
+        return self.max_power,self.MPP
 
     def update_max_power(self):
-        max_power_formatted = "{:.8f}".format(self.GetMaxPower())
+
+        max_power, MPP = self.GetMaxPower()
+
+        max_power_formatted = "{:.8f} W".format(max_power)
+        Vmpp_formatted = "{:.8f} V".format(MPP["Vmpp"])
+        Impp_formatted = "{:.8f} A".format(MPP["Impp"])
+        
         self.max_power_var.set(max_power_formatted)
+        self.Vmpp_var.set(Vmpp_formatted)
+        self.Impp_var.set(Impp_formatted)
+
         self.window.after(1000, self.update_max_power)
 
     def setup_edit_tab(self):
@@ -155,6 +166,33 @@ class GUI:
             font=("Bold", 19 * -1)
         )
 
+        canvas_edit.create_text(
+            1210.0,
+            250.0,
+            anchor="nw",
+            text="MPP : ",
+            fill="#FFFFFF",
+            font=("Bold", 19 * -1)
+        )
+
+        canvas_edit.create_text(
+            1360.0,
+            210.0,
+            anchor="nw",
+            text="Vmpp",
+            fill="#FFFFFF",
+            font=("Bold", 17 * -1)
+        )
+        canvas_edit.create_text(
+            1660.0,
+            210.0,
+            anchor="nw",
+            text="Impp",
+            fill="#FFFFFF",
+            font=("Bold", 17 * -1)
+        )
+
+
         self.image_image_6 = PhotoImage(file=self.relative_to_assets("image_6.png"))
         image_6 = canvas_edit.create_image(29.0,435.0, image=self.image_image_6)
 
@@ -171,6 +209,8 @@ class GUI:
         image_12 = canvas_edit.create_image(400.0, 138.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(730.0, 138.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(1400.0, 138.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(1400.0, 260.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(1700.0, 260.0, image=self.image_image_12)
 
 
 
@@ -228,7 +268,25 @@ class GUI:
             )
         self.label_max_power_value.place(x=1310, y=124)
 
-            # Start updating max power
+        self.label_Vmpp_value = Label(
+                self.tab_edit,
+                textvariable=self.Vmpp_var,
+                bg="#D9D9D9",
+                fg="#D68102",
+                font=("Inter Medium", 16)
+            )
+        self.label_Vmpp_value.place(x=1310, y=246)
+
+        self.label_Impp_value = Label(
+                self.tab_edit,
+                textvariable=self.Impp_var,
+                bg="#D9D9D9",
+                fg="#D68102",
+                font=("Inter Medium", 16)
+            )
+        self.label_Impp_value.place(x=1605, y=246)
+
+            
         self.update_max_power()
             
 
