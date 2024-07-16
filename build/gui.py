@@ -19,6 +19,7 @@ class GUI:
         self.data_list_current = []
         self.data_list_voltage = []
         self.data_list_power = []
+        self.MPP = {"Voltage" : 0 , "Current" : 0}
 
 
         self.window = Tk()
@@ -56,9 +57,15 @@ class GUI:
 
     def GetMaxPower(self) :
         current, voltage = self.get_data()
-        power = current * voltage
+        if current and voltage :
+            power = current * voltage
+        else :
+            power = 0
+
         if power > self.max_power:
             self.max_power = power
+            self.MPP["Voltage"] = voltage
+            self.MPP["Current"] = current
         return self.max_power
 
     def update_max_power(self):
