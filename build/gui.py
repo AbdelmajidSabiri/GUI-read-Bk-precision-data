@@ -14,6 +14,8 @@ class GUI:
 
     ASSETS_PATH = Path(r"C:\Users\dell\GUI-read-Bk-precision-data\build\assets\frame0")
     def __init__(self):
+
+        # Initialize BK Precision device and data lists
         self.bk_device = Bkp8600()
         self.bk_device.initialize()
         self.data_list_current = []
@@ -22,15 +24,17 @@ class GUI:
         self.max_power = 0.0
         self.MPP = {"Vmpp" : 0 , "Impp" : 0}
 
-
+        # Create main window
         self.window = Tk()
         self.window.title("Agamine")
         self.window.geometry("1900x1500")
         self.window.configure(bg="#000000")
 
+        # Create a notebook To Add tabs
         self.notebook = ttk.Notebook(self.window)
         self.notebook.pack(expand=1, fill="both")
 
+        # Create variables for displaying max power and other parameters
         self.max_power_var = DoubleVar()
         self.Vmpp_var = StringVar()
         self.Impp_var = StringVar()
@@ -38,59 +42,78 @@ class GUI:
         self.Voc_var = StringVar()
 
 
+       # Create tabs
         self.tab_edit = ttk.Frame(self.notebook)
         self.tab_display = ttk.Frame(self.notebook)
 
         self.notebook.add(self.tab_edit, text='Edit')
         self.notebook.add(self.tab_display, text='Display')
 
+        # Add functionality tabs
         self.setup_edit_tab()
         self.setup_display_tab()
 
+        # Close window
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)  # Handle window closing event
         self.window.mainloop()
 
+    # Method to create path to images
     @staticmethod
     def relative_to_assets(path: str) -> Path:
         return GUI.ASSETS_PATH / Path(path)
 
+    # Function to validate number input (accept only numbers)
     def validate_numeric_input(self, P, default=False):
         if P.isdigit() or P == "" or (default and P == "default"):
             return True
         return False
 
+    # Function To get Max Power
     def GetMaxPower(self) :
+
+        # Get current and voltage
         current, voltage = self.get_data()
+        # Assign 0 to power if no data found
         if current and voltage :
             power = current * voltage
         else :
             power = 0
 
+        # If other max power found, change the old one and return it
         if power > self.max_power:
             self.max_power = power
+
+            # Take voltage and current of Max Power (Vmpp & Impp)
             self.MPP["Vmpp"] = voltage
             self.MPP["Impp"] = current
         return self.max_power,self.MPP
 
+    # Keep updatign Max Power
     def update_max_power(self):
-
+        # Update displayed maximum power and MPP values periodically
         max_power, MPP = self.GetMaxPower()
 
+        #Format Values
         max_power_formatted = "{:.8f} W".format(max_power)
         Vmpp_formatted = "{:.8f} V".format(MPP["Vmpp"])
         Impp_formatted = "{:.8f} A".format(MPP["Impp"])
         
+        #Assign Values to Variables
         self.max_power_var.set(max_power_formatted)
         self.Vmpp_var.set(Vmpp_formatted)
         self.Impp_var.set(Impp_formatted)
 
+        # Calculate and Update Isc and Voc
         self.calculate_isc_voc()
+
+        # Update every sec
         self.window.after(1000, self.update_max_power)
 
-    def calculate_isc_voc(self):
-        
-        Isc_found = False
 
+    #Function to calculate Isc and Voc
+    def calculate_isc_voc(self):
+        # Get Value of Isc if it found if not make it 0
+        Isc_found = False
         for v, i in zip(self.data_list_voltage, self.data_list_current):
             if v == 0:
                 self.Isc_var.set("{:.8f} A".format(i))
@@ -99,7 +122,8 @@ class GUI:
         if not Isc_found :
             self.Isc_var.set("0.00000000 A")
 
-        
+
+        # Get Value of Voc if it found if not make it 0
         Voc_found = False
 
         for v, i in zip(self.data_list_voltage, self.data_list_current):
@@ -112,7 +136,10 @@ class GUI:
         if not Voc_found :
             self.Voc_var.set("0.00000000 V")
 
+
     def setup_edit_tab(self):
+
+        # Setup the edit tab
         canvas_edit = Canvas(
             self.tab_edit,
             bg="#000000",
@@ -125,6 +152,8 @@ class GUI:
         )
         canvas_edit.pack(fill="both", expand=True)
 
+
+        # Load and display images and text on the canvas
         self.image_image_1 = PhotoImage(file=self.relative_to_assets("image_1.png"))
         image_1 = canvas_edit.create_image(171.0, 36.0, image=self.image_image_1)
 
@@ -265,8 +294,11 @@ class GUI:
         image_13 = canvas_edit.create_image(320.0, 190.0, image=self.image_image_13)
         image_13_1 = canvas_edit.create_image(650.0, 190.0, image=self.image_image_13)
 
+        # Setup entry fields and buttons for adding current and voltage
         vcmd = (self.window.register(self.validate_numeric_input), '%P')
 
+
+        #Current
         self.entry_current = Entry(
             self.tab_edit,
             bd=0,
@@ -286,6 +318,9 @@ class GUI:
         )
         self.button_current.place(x=275, y=174, width=93, height=35)
 
+
+
+        #Voltage
         self.entry_voltage = Entry(
             self.tab_edit,
             bd=0,
@@ -306,6 +341,7 @@ class GUI:
         self.button_voltage.place(x=605, y=174, width=93, height=35)
 
 
+        # Create labels to display calculated value 
         self.label_max_power_value = Label(
                 self.tab_edit,
                 textvariable=self.max_power_var,
@@ -352,11 +388,13 @@ class GUI:
             )
         self.label_Voc_value.place(x=1605, y=367)
 
-            
+        # Start updating maximum power and MPP values
         self.update_max_power()
             
 
     def setup_display_tab(self):
+
+        # Setup UI components for the 'Display' tab
         canvas_display = Canvas(
             self.tab_display,
             bg="#000000",
@@ -366,13 +404,14 @@ class GUI:
             highlightthickness=0,
             relief="ridge"
         )
-        
         canvas_display.pack(fill="both", expand=True)
 
+
+
+        # Load and place images and text labels on the canvas
         self.image_image_10 = PhotoImage(file=self.relative_to_assets("image_10.png"))
         self.image_image_11 = PhotoImage(file=self.relative_to_assets("image_11.png"))
         self.image_image_14 = PhotoImage(file=self.relative_to_assets("image_14.png"))
-
 
         image_1_1 = canvas_display.create_image(171.0, 36.0, image=self.image_image_1)
         image_2_1 = canvas_display.create_image(950.0001220703125,67.5, image=self.image_image_2)
@@ -425,6 +464,42 @@ class GUI:
             font=("Inter Medium", 16 * -1, "bold"),
         )
 
+        canvas_display.create_text(
+            550.0,
+            98.0,
+            anchor="nw",
+            text="Current Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+
+        canvas_display.create_text(
+            550.0,
+            533.0,
+            anchor="nw",
+            text="Power Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+
+        canvas_display.create_text(
+            1326.0,
+            98.0,
+            anchor="nw",
+            text="Voltage Variation",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+        
+        canvas_display.create_text(
+            1326.0,
+            533.0,
+            anchor="nw",
+            text="Combined Chart",
+            fill="#FFFFFF",
+            font=("Inter Bold", 27 * -1)
+        )
+
         image_6_1 = canvas_display.create_image(29.0,435.0, image=self.image_image_6)
         image_7_1 = canvas_display.create_image(30.0,285.0, image=self.image_image_7)
         image_8_1 = canvas_display.create_image(30.0,215.0, image=self.image_image_8)
@@ -434,6 +509,9 @@ class GUI:
         image_14 =canvas_display.create_image(1445.0,318.0,image=self.image_image_14)
         image_15 = canvas_display.create_image(1445.0, 753.0, image = self.image_image_11)
 
+
+
+        # Setup animated plots using Matplotlib and add them to the canvas
         fig_current, ax_current = plt.subplots(figsize=(5, 3))
         canvas_current = FigureCanvasTkAgg(fig_current, master=self.tab_display)
         canvas_current.draw()
@@ -479,42 +557,7 @@ class GUI:
         )
 
 
-        canvas_display.create_text(
-            550.0,
-            98.0,
-            anchor="nw",
-            text="Current Variation",
-            fill="#FFFFFF",
-            font=("Inter Bold", 27 * -1)
-        )
-
-        canvas_display.create_text(
-            550.0,
-            533.0,
-            anchor="nw",
-            text="Power Variation",
-            fill="#FFFFFF",
-            font=("Inter Bold", 27 * -1)
-        )
-
-        canvas_display.create_text(
-            1326.0,
-            98.0,
-            anchor="nw",
-            text="Voltage Variation",
-            fill="#FFFFFF",
-            font=("Inter Bold", 27 * -1)
-        )
-        
-        canvas_display.create_text(
-            1326.0,
-            533.0,
-            anchor="nw",
-            text="Combined Chart",
-            fill="#FFFFFF",
-            font=("Inter Bold", 27 * -1)
-        )
-
+    # Method to Take current and voltage data from the BK Precision device
     def get_data(self):
         try:
             measured_current = self.bk_device.get_current()
@@ -524,6 +567,7 @@ class GUI:
             print(f"Error retrieving data: {e}")
             return 0.0, 0.0
 
+    # Animation function for updating current plot
     def animate_current(self, i, ax):
         current, _ = self.get_data()
         self.data_list_current.append(current)
@@ -533,14 +577,17 @@ class GUI:
         ax.set_ylim([0.0001, 0.003])
 
 
+    # Animation function for updating Voltage plot
     def animate_voltage(self, i, ax):
         _, voltage = self.get_data()
         self.data_list_voltage.append(voltage)
         self.data_list_voltage = self.data_list_voltage[-50:]  # Limit to the last 50 data points
         ax.clear()
         ax.plot(self.data_list_voltage)
-        ax.set_ylim([0, 0.009])
+        ax.set_ylim([0, 20])
 
+
+    # Animation function for updating Power plot
     def animate_power(self,i,ax) :
         current, voltage = self.get_data()
         power = current * voltage
@@ -550,20 +597,22 @@ class GUI:
         ax.plot(self.data_list_power)
         ax.set_ylim([0, 0.000005])
 
+
+    # Animation function for updating Combined (current & voltage) plot
     def animate_combined(self, i, ax):
         current, voltage = self.get_data()
         self.data_list_current.append(current)
         self.data_list_voltage.append(voltage)
         self.data_list_current = self.data_list_current[-50:]  # Limit to the last 50 data points
         self.data_list_voltage = self.data_list_voltage[-50:]  # Limit to the last 50 data points
-
         ax.clear()
         ax.plot(self.data_list_current, label='Current')
         ax.plot(self.data_list_voltage, label='Voltage')
         ax.legend()
-        ax.set_ylim([0, 0.008]) 
+        ax.set_ylim([0, 20]) 
 
 
+    # Method to add current data to the list
     def add_current(self):
         try:
             current_value = float(self.entry_current.get())
@@ -572,6 +621,7 @@ class GUI:
         except ValueError:
             print("Invalid current value entered.")
 
+    # Method to add voltage data to the list
     def add_voltage(self):
         try:
             voltage_value = float(self.entry_voltage.get())
@@ -580,10 +630,12 @@ class GUI:
         except ValueError:
             print("Invalid voltage value entered.")
 
+    #Function of closing window
     def on_closing(self):
         self.bk_device.reset_to_manual()
         self.window.destroy()
         self.window.quit()
 
+# Instantiate the GUI class to start the application
 if __name__ == "__main__":
     GUI()
