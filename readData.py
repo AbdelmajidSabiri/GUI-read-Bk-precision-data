@@ -111,8 +111,8 @@ def Add_current(AddedValue, filename="output.xlsx"):
     last.set_current(AddedValue)
     
     # Create a DataFrame with the new data
-    df = pd.DataFrame([[measured_current, voltage, AddedValue,None]], 
-                      columns=["Measured Current", "Voltage", "Added Current","Added voltage"])
+    df = pd.DataFrame([["00000000",measured_current, voltage, AddedValue,None]], 
+                      columns=["Serial number","Measured Current", "Voltage", "Added Current","Added voltage"])
     
     # Load the existing workbook or create a new one if it doesn't exist
     try:
@@ -121,14 +121,9 @@ def Add_current(AddedValue, filename="output.xlsx"):
         book = Workbook()
     
     # Select the active worksheet (you can modify this as per your requirement)
-    sheet_name = 'Sheet1'
-    if sheet_name not in book.sheetnames:
-        book.create_sheet(sheet_name)
-    
-    sheet = book[sheet_name]
+    sheet = book['Sheet2']
     
     # Append data to the worksheet
-    max_row = sheet.max_row
     for row in df.values.tolist():
         sheet.append(row)
     
@@ -152,8 +147,8 @@ def Add_voltage(AddedValue, filename="output.xlsx"):
     last.set_voltage(AddedValue)
     
     # Create a DataFrame with the new data
-    df = pd.DataFrame([[measured_current, voltage, None, AddedValue]], 
-                      columns=["Measured Current", "Voltage", "Added Current","Added Voltage"])
+    df = pd.DataFrame([["00000000",measured_current, voltage, None, AddedValue]], 
+                      columns=["Serial number","Measured Current", "Voltage", "Added Current","Added Voltage"])
     
     # Load the existing workbook or create a new one if it doesn't exist
     try:
@@ -162,14 +157,46 @@ def Add_voltage(AddedValue, filename="output.xlsx"):
         book = Workbook()
     
     # Select the active worksheet (you can modify this as per your requirement)
-    sheet_name = 'Sheet1'
-    if sheet_name not in book.sheetnames:
-        book.create_sheet(sheet_name)
-    
-    sheet = book[sheet_name]
+    sheet = book['Sheet2']
     
     # Append data to the worksheet
-    max_row = sheet.max_row
+    for row in df.values.tolist():
+        sheet.append(row)
+    
+    # Save the workbook
+    book.save(filename)
+    book.close()  # Close the workbook
+    
+    print(f"Data appended to {filename} successfully.")
+    
+    # Reset Bkp8600 object
+    last.reset_to_manual()
+    del last
+
+
+def Add_serialNum(AddedValue, filename="output.xlsx"):
+    # Initialize Bkp8600 object and measure current and voltage
+    last = Bkp8600()
+    last.initialize()
+    
+    measured_current = last.get_current()
+    voltage = last.get_voltage()
+
+    
+    # Create a DataFrame with the new data
+    df = pd.DataFrame([[AddedValue,measured_current, voltage, None, None]], 
+                      columns=["Serial number","Measured Current", "Voltage", "Added Current","Added Voltage"])
+    
+    # Load the existing workbook or create a new one if it doesn't exist
+    try:
+        book = load_workbook(filename)
+    except FileNotFoundError:
+        book = Workbook()
+    
+    # Select the active worksheet (you can modify this as per your requirement)
+    sheet = book['Sheet2']
+    
+    # Append data to the worksheet
     for row in df.values.tolist():
         sheet.append(row)
     
