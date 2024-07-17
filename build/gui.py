@@ -6,7 +6,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import sys
 sys.path.append('C:\\Users\\dell\\GUI-read-Bk-precision-data')
-from readData import Add_current, Bkp8600, Add_voltage
+from readData import Add_current, Bkp8600, Add_voltage, Add_serialNum
+import customtkinter as ctk
 
 
 
@@ -281,6 +282,7 @@ class GUI:
         self.image_image_12 = PhotoImage(file=self.relative_to_assets("image_12.png"))
         image_12 = canvas_edit.create_image(400.0, 138.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(730.0, 138.0, image=self.image_image_12)
+        image_12 = canvas_edit.create_image(400.0, 260.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(1400.0, 138.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(1400.0, 260.0, image=self.image_image_12)
         image_12 = canvas_edit.create_image(1700.0, 260.0, image=self.image_image_12)
@@ -292,7 +294,9 @@ class GUI:
 
         self.image_image_13 = PhotoImage(file=self.relative_to_assets("image_13.png"))
         image_13 = canvas_edit.create_image(320.0, 190.0, image=self.image_image_13)
-        image_13_1 = canvas_edit.create_image(650.0, 190.0, image=self.image_image_13)
+        image_13 = canvas_edit.create_image(650.0, 190.0, image=self.image_image_13)
+        image_13 = canvas_edit.create_image(320.0, 312.0, image=self.image_image_13)
+
 
         # Setup entry fields and buttons for adding current and voltage
         vcmd = (self.window.register(self.validate_numeric_input), '%P')
@@ -317,7 +321,7 @@ class GUI:
             bd=0
         )
         self.button_current.place(x=275, y=174, width=93, height=35)
-
+    
 
 
         #Voltage
@@ -339,6 +343,27 @@ class GUI:
             bd=0
         )
         self.button_voltage.place(x=605, y=174, width=93, height=35)
+
+
+        #Serial Number
+        self.entry_serialNum = Entry(
+            self.tab_edit,
+            bd=0,
+            bg="#D9D9D9",
+            highlightthickness=0,
+            font=("Inter Medium", 18),
+            validate='key',
+            validatecommand=vcmd
+        )
+        self.entry_serialNum.place(x=287, y=245, width=200, height=30)
+        self.button_serialNum = Button(
+            self.tab_edit,
+            text="Insert Serial Number",
+            command=self.add_serialNum,
+            bg="#D9D9D9",
+            bd=0
+        )
+        self.button_serialNum.place(x=275, y=295, width=95, height=35)
 
 
         # Create labels to display calculated value 
@@ -390,7 +415,8 @@ class GUI:
 
         # Start updating maximum power and MPP values
         self.update_max_power()
-            
+
+
 
     def setup_display_tab(self):
 
@@ -627,6 +653,13 @@ class GUI:
             voltage_value = float(self.entry_voltage.get())
             self.bk_device.set_voltage(voltage_value)
             Add_voltage(voltage_value)
+        except ValueError:
+            print("Invalid voltage value entered.")
+
+    def add_serialNum(self):
+        try:
+            serial_number = float(self.entry_serialNum.get())
+            Add_serialNum(serial_number)
         except ValueError:
             print("Invalid voltage value entered.")
 
