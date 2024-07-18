@@ -209,3 +209,53 @@ def Add_serialNum(AddedValue, filename="output.xlsx"):
     # Reset Bkp8600 object
     last.reset_to_manual()
     del last
+
+def CollectData(date, time, serial_number, max_power = 0, Vmpp=0, Impp=0, Voc=0, Isc=0):
+    wb = load_workbook('output.xlsx')
+
+
+    # Select the worksheet
+    sheet = wb['Sheet2']
+
+    last_id = sheet.cell(row=sheet.max_row, column=1).value  # Assuming ID is in column 1
+    last_module_number = sheet.cell(row=sheet.max_row, column=2).value 
+
+
+    if last_id is not None:
+        next_id = int(last_id) + 1
+    else:
+        next_id = 1 
+
+
+    if last_module_number is not None:
+        next_module_number = int(last_module_number) + 1
+    else:
+        next_module_number = 312  
+
+    # Append data to the worksheet
+    row = ( next_id,                        #ID
+            next_module_number,             #Module Number
+            0,                              #Test Result
+            max_power,                      #Pmpp
+            Voc,                            #Uoc
+            Isc,                            #Isc
+            0,                              #Temperature Ambient
+            0,                              #Temperature Lamps
+            31.0654,                        #Pmpp Reference
+            0,                              #Pmpp Deviation
+            9.9332,                         #Uoc Reference
+            0,                              #Uoc Deviation
+            4.3456,                         #Isc Reference
+            0,                              #Isc Deviation
+            0,                              #Temperature Ambient Reference
+            2,                              #Temperature Lamps Reference
+            0,                              #Reference Number
+            date,                           #Date
+            time,                           #Time
+            serial_number                   #Serial Number
+            )
+
+    sheet.append(row)
+
+    # Save the workbook
+    wb.save('output.xlsx')
