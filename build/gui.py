@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
-import sys
+import sys,time
 sys.path.append('C:\\Users\\dell\\GUI-read-Bk-precision-data')
-from readData import Add_current, Bkp8600, Add_voltage, Add_serialNum
-from customtkinter import CTkSwitch
+from readData import Add_current, Bkp8600, Add_voltage, Add_serialNum, CollectData
 from PIL import Image, ImageTk
+from datetime import datetime
 
 
 
@@ -357,14 +357,19 @@ class GUI:
             validatecommand=vcmd
         )
         self.entry_serialNum.place(x=287, y=245, width=200, height=30)
-        self.button_serialNum = Button(
+
+
+
+        ## Test Button
+        self.button_test = Button(
             self.tab_edit,
-            text="Insert Serial Number",
-            command=self.add_serialNum,
+            text="TEST",
+            command=self.test,
             bg="#D9D9D9",
             bd=0
         )
-        self.button_serialNum.place(x=275, y=295, width=95, height=35)
+        self.button_test.place(x=1305, y=504, width=93, height=35)
+
 
 
         # Create labels to display calculated value 
@@ -663,32 +668,41 @@ class GUI:
         ax.set_ylim([0, 20]) 
 
 
-    # Method to add current data to the list
+    # Method change CC
     def add_current(self):
-        try:
-            current_value = float(self.entry_current.get())
-            self.bk_device.set_current(current_value)
-            Add_current(current_value)  # Update the Excel file
-        except ValueError:
-            print("Invalid current value entered.")
+        current_value = float(self.entry_current.get())
+        self.bk_device.set_current(current_value)
 
-    # Method to add voltage data to the list
+    # Method change CV
     def add_voltage(self):
-        try:
-            voltage_value = float(self.entry_voltage.get())
-            self.bk_device.set_voltage(voltage_value)
-            Add_voltage(voltage_value)
-        except ValueError:
-            print("Invalid voltage value entered.")
+        voltage_value = float(self.entry_voltage.get())
+        self.bk_device.set_voltage(voltage_value)
 
-    def add_serialNum(self):
-        try:
-            serial_number = float(self.entry_serialNum.get())
-            Add_serialNum(serial_number)
-        except ValueError:
-            print("Invalid voltage value entered.")
+    # Method to get Serial Number
+    def get_serialNum(self):
+        serial_number = self.entry_serialNum.get()
+        return serial_number
 
-    is_on = True
+    def test(self) :
+
+        current_date = datetime.now()
+        formatted_date = current_date.strftime("%m/%d/%Y")
+        formatted_time = current_date.strftime("%H:%M:%S")
+
+        serial_number = self.get_serialNum()
+        Voc = round(float(self.Voc_var.get().split()[0]),4)
+        Isc = round(float(self.Isc_var.get().split()[0]),4)
+        max_power = self.max_power
+        Impp = round(float(self.Impp_var.get().split()[0]),4)
+        Vmpp = round(float(self.Vmpp_var.get().split()[0]),4)
+
+        
+        CollectData(formatted_date,formatted_time,serial_number,max_power,Vmpp,Impp,Voc,Isc)
+        
+
+        
+
+
 
 
 
