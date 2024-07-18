@@ -1,5 +1,5 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, Button, PhotoImage,ttk, DoubleVar,Label,StringVar
+from tkinter import Tk, Canvas, Entry, Button, PhotoImage,ttk, DoubleVar,Label,StringVar, BooleanVar
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -7,7 +7,8 @@ import pandas as pd
 import sys
 sys.path.append('C:\\Users\\dell\\GUI-read-Bk-precision-data')
 from readData import Add_current, Bkp8600, Add_voltage, Add_serialNum
-import customtkinter as ctk
+from customtkinter import CTkSwitch
+from PIL import Image, ImageTk
 
 
 
@@ -29,7 +30,7 @@ class GUI:
         self.window = Tk()
         self.window.title("Agamine")
         self.window.geometry("1900x1500")
-        self.window.configure(bg="#000000")
+        self.window.attributes('-alpha', 1)
 
         # Create a notebook To Add tabs
         self.notebook = ttk.Notebook(self.window)
@@ -413,8 +414,32 @@ class GUI:
             )
         self.label_Voc_value.place(x=1605, y=367)
 
-        # Start updating maximum power and MPP values
+    
+        self.light_label = Label(self.tab_edit, 
+            text = "The light is ON!", 
+            fg = "green", 
+            bg = "black",
+            font = ("Helvetica", 18))
+
+        self.light_label.place(x=380, y=390)
+
+        ## Resize Images
+        self.on = Image.open("on.png")
+        self.off = Image.open("off.png")
+        self.on_resized = self.on.resize((100, 50), Image.LANCZOS)
+        self.off_resized = self.off.resize((100, 50), Image.LANCZOS)
+
+        self.on = ImageTk.PhotoImage(self.on_resized)
+        self.off = ImageTk.PhotoImage(self.off_resized)
+
+        self.on_button = Button(self.tab_edit,bg="black" ,image = self.on, bd = 0,
+                        command = self.switch, activebackground="black")
+        self.on_button.place(x=260, y=380)
+
+
+        # Start updating maximum power and MPP values        
         self.update_max_power()
+
 
 
 
@@ -662,6 +687,19 @@ class GUI:
             Add_serialNum(serial_number)
         except ValueError:
             print("Invalid voltage value entered.")
+
+    is_on = True
+
+
+
+    # Define our switch function
+    def switch(self):
+        if self.light_label.cget("text") == "The light is ON!":
+            self.light_label.config(text = "The light is OFF!", fg = "grey")
+            self.on_button.config(image = self.off)
+        else:
+            self.light_label.config(text = "The light is ON!", fg = "green")
+            self.on_button.config(image = self.on)
 
     #Function of closing window
     def on_closing(self):
